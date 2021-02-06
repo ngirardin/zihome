@@ -1,0 +1,15 @@
+[package]
+name = "rust"
+version = "0.1.0"
+authors = ["ngirardin"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hex = "0.4.2"
+serialport = "4.0.0"
+
+[[bin]]
+name = "rust"
+path = "src/main.rs"
