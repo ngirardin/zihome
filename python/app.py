@@ -10,12 +10,10 @@ from zigate import dispatcher
 # CREATE TABLE events(id SERIAL PRIMARY KEY, date TIMESTAMP DEFAULT NOW(), name TEXT NOT NULL, payload TEXT NOT NULL);
 # CREATE TABLE points(id SERIAL PRIMARY KEY, device TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL);
 
-
-def allow_pair():
-    z = zigate.connect()
-    z.permit_join(duration=240)  # 1 minute
-    print('Allowing join for 1 minute')
-    z.close()
+device_dimmer = 8625
+device_switch = 0000
+# alaram 9cc0
+# ? 6b4f
 
 
 def insert_event(name, payload):
@@ -34,6 +32,16 @@ def insert_point(device, name, value):
     conn.commit()
 
 
+def dimmer_on():
+    device = z.get_device_from_addr(device_dimmer)
+    z.action_onoff(device, endpoint=1, onoff=zigate.ON)
+
+
+def dimmer_off():
+    device = z.get_device_from_addr(device_dimmer)
+    z.action_onoff(device, endpoint=1, onoff=zigate.OFF)
+
+
 def my_callback(sender, signal, **kwargs):
     device = kwargs['device']
 
@@ -49,6 +57,7 @@ def my_callback(sender, signal, **kwargs):
     name = attribute['name']
     value = attribute['value']
 
+    # Insert points
     insert_point(addr, 'lqi', device.lqi_percent)
 
     if name == 'xiaomi' or name == 'current_delivered':
@@ -58,36 +67,38 @@ def my_callback(sender, signal, **kwargs):
 
     if isinstance(value, dict) and 'alarm1' in value:
         # detected an alarm
-        insert_point(addr, 'alarm', value['alarm1'])
+        alarm = value['alarm1']
+        insert_point(addr, 'alarm', alarm)
+
+        if alarm:
+            print('Presence sensor ON')
+            dimmer_on()
+        else:
+            print('Presence sensor OFF')
+            dimmer_off()
+
         return
 
     insert_point(addr, name, value)
 
 
-def main():
-    logging.basicConfig()
-    # logging.root.setLevel(logging.DEBUG)
-
-    dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_ADDED)
-    # dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_UPDATED)
-    dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_REMOVED)
-    dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_ADDRESS_CHANGED)
-    # dispatcher.connect(my_callback, zigate.ZIGATE_ATTRIBUTE_ADDED)
-    dispatcher.connect(my_callback, zigate.ZIGATE_ATTRIBUTE_UPDATED)
-    dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_NEED_DISCOVERY)
-
-    z = zigate.connect()
-
-    # z.get_device_from_addr('76da').action_onoff(zigate.ON)
-
-    while True:
-        time.sleep(0.5)
-        # print('.', end='')
-
-
-conn = psycopg2.connect(
-    "host=localhost dbname=zihome user=zihome password=pwd")
+conn = psycopg2.connect("host=localhost user=postgres password=pwd")
 cur = conn.cursor()
 
-# allow_pair()
-main()
+logging.basicConfig()
+# logging.root.setLevel(logging.DEBUG)
+
+dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_ADDED)
+# dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_UPDATED)
+dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_REMOVED)
+dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_ADDRESS_CHANGED)
+# dispatcher.connect(my_callback, zigate.ZIGATE_ATTRIBUTE_ADDED)
+dispatcher.connect(my_callback, zigate.ZIGATE_ATTRIBUTE_UPDATED)
+dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_NEED_DISCOVERY)
+
+z = zigate.connect()
+# z.get_device_from_addr('76da').action_onoff(zigate.ON)
+
+while True:
+    time.sleep(0.5)
+    print('.', end='')
