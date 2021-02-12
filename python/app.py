@@ -10,10 +10,9 @@ from zigate import dispatcher
 # CREATE TABLE events(id SERIAL PRIMARY KEY, date TIMESTAMP DEFAULT NOW(), name TEXT NOT NULL, payload TEXT NOT NULL);
 # CREATE TABLE points(id SERIAL PRIMARY KEY, device TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL);
 
-device_dimmer = 8625
-device_switch = 0000
-# alaram 9cc0
-# ? 6b4f
+device_dimmer = '242e'
+device_switch = 'a7dc'
+# device_alarm = c773
 
 
 def insert_event(name, payload):
