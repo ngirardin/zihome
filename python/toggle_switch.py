@@ -12,7 +12,7 @@ def on_exit(z):
 
 
 logging.basicConfig()
-logging.root.setLevel(logging.DEBUG)
+# logging.root.setLevel(logging.DEBUG)
 
 # channels = channels or [11, 14, 15, 19, 20, 24, 25, 26]
 
@@ -28,24 +28,20 @@ device_dimmer = '242e'
 device_switch = 'a7dc'
 
 while True:
-    print('switch on')
-    z.action_onoff(device_switch, endpoint=1, onoff=zigate.ON)
-    time.sleep(5)
+    # print('switch on')
+    # z.action_onoff(device_switch, endpoint=1, onoff=zigate.ON)
 
     print('dimmer on')
     z.action_move_level_onoff(
-        device_dimmer, endpoint=1, onoff=zigate.ON, level=50)
-    time.sleep(5)
-    z.action_move_level_onoff(
-        device_dimmer, endpoint=1, onoff=zigate.ON, level=100)
-    time.sleep(5)
+        device_dimmer, endpoint=1, onoff=zigate.ON, level=30)
 
-    print('switch off')
-    z.action_onoff(device_switch, endpoint=1, onoff=zigate.OFF)
-    time.sleep(5)
+    time.sleep(3)
+
+    # print('switch off')
+    # z.action_onoff(device_switch, endpoint=1, onoff=zigate.OFF)
 
     print('dimmer off')
+    print('lqi: {}, lqi_percent: {}'.format(z.get_device_from_addr(
+        device_dimmer).lqi, z.get_device_from_addr(device_dimmer).lqi_percent))
     z.action_onoff(device_dimmer, endpoint=1, onoff=zigate.OFF)
-    time.sleep(5)
-
-    # z.action_move_level_onoff(device, endpoint=1, onoff=toggle, level=50)  # up
+    time.sleep(3)
