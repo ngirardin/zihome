@@ -1,25 +1,31 @@
+import atexit
 import logging
 import time
 
 import zigate
 
+
+def on_exit(z):
+    print('Closing the zigate...')
+    z.close()
+    print('Closed!')
+
+
 logging.basicConfig()
-# logging.root.setLevel(logging.DEBUG)
+logging.root.setLevel(logging.DEBUG)
 
-        # channels = channels or [11, 14, 15, 19, 20, 24, 25, 26]
+# channels = channels or [11, 14, 15, 19, 20, 24, 25, 26]
 
-z = zigate.connect()
+channel = 11
+
+print("Using channel {}".format(channel))
+
+z = zigate.connect(channel=channel)
+
+atexit.register(on_exit, z)
 
 device_dimmer = '242e'
 device_switch = 'a7dc'
-
-device = z.get_device_from_addr(device_dimmer)
-
-
-# z.discover_device(device, force=True)
-# z.refresh_device(device, force=True)
-
-toggle = 2
 
 while True:
     print('switch on')

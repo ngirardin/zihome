@@ -12,7 +12,7 @@ from zigate import dispatcher
 
 device_dimmer = '242e'
 device_switch = 'a7dc'
-# device_alarm = c773
+device_alarm = 'c773'
 
 
 def insert_event(name, payload):
@@ -95,8 +95,7 @@ dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_ADDRESS_CHANGED)
 dispatcher.connect(my_callback, zigate.ZIGATE_ATTRIBUTE_UPDATED)
 dispatcher.connect(my_callback, zigate.ZIGATE_DEVICE_NEED_DISCOVERY)
 
-z = zigate.connect()
-# z.get_device_from_addr('76da').action_onoff(zigate.ON)
+z = zigate.connect(channel=11)
 
 while True:
     time.sleep(0.5)

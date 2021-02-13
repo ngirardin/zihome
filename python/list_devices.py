@@ -5,9 +5,7 @@ import zigate
 logging.basicConfig()
 # logging.root.setLevel(logging.DEBUG)
 
-z = zigate.connect()
-
-z.remove_device('6b4f', force=True)
+z = zigate.connect(channel=11)
 
 print('Got {} devices'.format(len(z.devices)))
 
@@ -29,8 +27,8 @@ for device in z.devices:
     # print('  - device.attributes: {}'.format(device.attributes))
     print('  - device.need_discovery: {}'.format(device.need_discovery()))
 
+    print('  - attributes:')
     for attribute in device.attributes:
-        print('  - attribute:')
         # print('    - endpoint: {}'.format(attribute['endpoint']))
         # print('    - cluster: {}'.format(attribute['cluster']))
         # print('    - attribute: {}'.format(attribute['attribute']))
@@ -39,14 +37,7 @@ for device in z.devices:
         attribute_type = attribute['type'] if 'type' in attribute else '[No type]'
         attribute_data = attribute['data'] if 'data' in attribute else '[No data]'
 
-        print('    - endpoint: {}'.format(attribute['endpoint']))
-        print('    - cluster: {}'.format(attribute['cluster']))
-        print('    - attribute: {}'.format(attribute['attribute']))
-
-        print('    - name: {}'.format(attribute_name))
-        print('    - data: {}'.format(attribute_data))
-        print('    - type: {}'.format(attribute_type))
-        print('    - value: {}'.format(attribute_value))
+        print('    - endpoint: {}, cluster: {}, attribute: {}, name: {}, data: {}, type: {}, value: {}'.format(attribute['endpoint'], attribute['cluster'], attribute['attribute'], attribute_name, attribute_data, attribute_type, attribute_value))
 
 #     # print(device.missing)
 #     # print(device.discovery)
